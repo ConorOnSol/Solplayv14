@@ -18,89 +18,8 @@ export const Container = styled.div<{ $disabled?: boolean }>`
 export const Options = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  align-items: center;
-  justify-content: center;
 `
 
-export const Blue3dButton = styled.button<{ selected?: boolean }>`
-  background: linear-gradient(145deg, #1e88e5, #1565c0);
-  border: none;
-  margin: 0;
-  padding: 20px 30px;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 15px;
-  cursor: pointer;
-  font-size: 20px;
-  color: white;
-  font-weight: bold;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-  box-shadow: 
-    inset 0 -8px 0 0 rgba(0, 0, 0, 0.2),
-    inset 0 0 20px rgba(33, 150, 243, 0.3),
-    0 6px 12px rgba(0, 0, 0, 0.15);
-  border: 2px solid #64b5f6;
-  position: relative;
-  overflow: hidden;
-  min-width: 200px;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50%;
-    background: linear-gradient(rgba(255,255,255,0.2), transparent);
-    border-radius: 15px 15px 0 0;
-  }
-
-  & > div:first-child {
-    font-size: 48px;
-    filter: drop-shadow(-2px 2px 2px #00000066);
-    margin-right: 15px;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 
-      inset 0 -6px 0 0 rgba(0, 0, 0, 0.2),
-      inset 0 0 25px rgba(33, 150, 243, 0.4),
-      0 8px 16px rgba(0, 0, 0, 0.2);
-  }
-
-  &:active {
-    transform: translateY(2px);
-    box-shadow: 
-      inset 0 -2px 0 0 rgba(0, 0, 0, 0.2),
-      inset 0 0 15px rgba(33, 150, 243, 0.3),
-      0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  ${(props) => props.selected && css`
-    background: linear-gradient(145deg, #1565c0, #0d47a1);
-    box-shadow: 
-      inset 0 2px 0 0 rgba(255, 255, 255, 0.2),
-      inset 0 0 25px rgba(13, 71, 161, 0.5),
-      0 4px 8px rgba(0, 0, 0, 0.2);
-    transform: translateY(4px);
-    
-    &::before {
-      background: linear-gradient(rgba(255,255,255,0.1), transparent);
-    }
-  `}
-
-  ${(props) => !props.selected && css`
-    &:hover {
-      background: linear-gradient(145deg, #2196f3, #1976d2);
-    }
-  `}
-`
-
-// Keep the existing Option component for reference, but we're using Blue3dButton instead
 export const Option = styled.button<{ selected?: boolean }>`
   background: none;
   border: none;
@@ -212,7 +131,6 @@ export const Card = styled.div<{$small?: boolean}>`
     opacity: .9;
   }
 `
-
 const float = keyframes`
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
