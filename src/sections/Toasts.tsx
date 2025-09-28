@@ -33,69 +33,89 @@ const StackedToast = styled.div`
 `
 
 const StyledToast = styled.div`
-  @property --fade-in {
-    syntax: '<percentage>';
-    initial-value: 0%;
-    inherits: false;
-  }
-  @keyframes toast-appear {
-    0% { opacity: 0; --fade-in: 100%; }
-    100% { opacity: 1; --fade-in: 0%; }
-  }
-  background: #fffffff0;
-  color: black;
-  border-radius: 10px;
+  background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+  color: #e0e0e0;
+  border: 1px solid rgba(128, 255, 128, 0.2);
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   pointer-events: auto;
   user-select: none;
   cursor: pointer;
-  padding: 10px;
-
-  animation: toast-appear .2s;
-
+  padding: 14px 18px;
   width: 100%;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  animation: fadeIn 0.25s ease-out;
+  position: relative;
 
-  filter: drop-shadow(3px 3px 1px #00000033);
-  backdrop-filter: blur(50px);
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(135deg, #00ff9f55, #a855f755);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
 
   &:hover {
-    background: #ffffffff;
+    background: linear-gradient(135deg, #111, #222);
+    border-color: rgba(168, 85, 247, 0.3);
   }
 
   @media (min-width: 800px) {
-    min-width: 250px;
-    max-width: 300px;
-    transform: translateX(var(--fade-in));
+    min-width: 260px;
+    max-width: 320px;
+    transform: translateY(0);
   }
-`
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
 
 const StyledTimer = styled.div<{$ticking: boolean}>`
-  @keyframes yesyes {
-    0% { width: 100%;}
-    100% { width: 0%;}
+  @keyframes drain {
+    from { width: 100%; }
+    to { width: 0%; }
   }
+
   width: 100%;
-  height: 5px;
-  border-radius: 10px;
-  background: #cccccc55;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
   position: relative;
   overflow: hidden;
-  &:after {
+
+  &::after {
     ${(props) => props.$ticking && css`
-      animation: yesyes linear 10s;
+      animation: drain linear 10s;
     `}
-    content: " ";
+    content: "";
     position: absolute;
-    border-radius: 10px;
     left: 0;
     top: 0;
+    height: 100%;
     width: 100%;
-    height: 5px;
-    background: #9564ff;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #00ff9f, #a855f7);
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
   }
-`
+`;
+
 
 function Toast({ toast }: {toast: TToast}) {
   const timeout = React.useRef<NodeJS.Timer>()

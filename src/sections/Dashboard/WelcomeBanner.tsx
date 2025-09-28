@@ -1,135 +1,135 @@
-import { useWallet } from '@solana/wallet-adapter-react';
-import { useWalletModal } from '@solana/wallet-adapter-react-ui';
-import React from 'react';
-import styled from 'styled-components';
-import { useUserStore } from '../../hooks/useUserStore';
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import React from "react";
+import styled from "styled-components";
+import { useUserStore } from "../../hooks/useUserStore";
+import { FaCopy, FaTicketAlt, FaDiscord } from "react-icons/fa";
 
 const WelcomeWrapper = styled.div`
-  /* Animations */
-  @keyframes welcome-fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes backgroundGradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  /* Styling */
-  background: linear-gradient(-45deg, #ffb07c, #ff3e88, #2969ff, #ef3cff, #ff3c87);
-  background-size: 300% 300%;
-  animation: welcome-fade-in 0.5s ease, backgroundGradient 30s ease infinite;
-  border-radius: 12px; /* Slightly larger radius for a modern look */
-  padding: 24px; /* Consistent padding */
+  background: radial-gradient(circle at top left, #0d0d0d, #151515);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 20px;
+  padding: 40px 28px;
   display: flex;
   flex-direction: column;
-  gap: 24px; /* Consistent gap */
+  gap: 28px;
   text-align: center;
-  filter: drop-shadow(0 4px 3px rgba(0,0,0,.07)) drop-shadow(0 2px 2px rgba(0,0,0,.06));
+  color: #e5e5e5;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
 
-  /* Desktop styles using a min-width media query */
   @media (min-width: 800px) {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1.5fr 1fr;
     align-items: center;
     text-align: left;
-    padding: 40px;
-    gap: 40px;
+    gap: 48px;
+    padding: 56px 48px;
   }
 `;
 
 const WelcomeContent = styled.div`
   h1 {
-    font-size: 1.75rem; /* Responsive font size */
-    margin: 0 0 8px 0;
-    color: #ffffff;
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #00ff9f, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
   }
 
   p {
-    font-size: 1rem;
-    color: #ffffffd1;
-    margin: 0;
+    font-size: 1.1rem;
+    color: #bdbdbd;
+    line-height: 1.7;
+    max-width: 500px;
+    margin: 0 auto;
   }
 
   @media (min-width: 800px) {
     h1 {
-      font-size: 2.25rem;
+      font-size: 3rem;
     }
     p {
-      font-size: 1.125rem;
+      font-size: 1.25rem;
+      margin: 0;
     }
   }
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
-  flex-wrap: wrap; /* Allows buttons to wrap onto the next line */
-  gap: 12px; /* Space between buttons */
-  justify-content: center; /* Center buttons on mobile */
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
 
   @media (min-width: 800px) {
     flex-direction: column;
+    align-items: stretch;
     justify-content: flex-start;
   }
 `;
 
 const ActionButton = styled.button`
-  /* Base styles */
-  border: none;
-  border-radius: 10px;
-  padding: 12px 20px;
-  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border-radius: 14px;
+  font-size: 1rem;
   font-weight: 600;
-  background: #ffffffdf;
-  color: black;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  flex-grow: 1; /* Allows buttons to share space on mobile */
-  text-align: center;
+  border: 1px solid rgba(0, 255, 159, 0.25);
+  background: linear-gradient(90deg, #1b1b1b, #222);
+  color: #00ff9f;
+  transition: all 0.2s ease-in-out;
+  flex-grow: 1;
 
   &:hover {
-    background: white;
-    transform: translateY(-2px); /* Subtle hover effect */
+    background: linear-gradient(90deg, #2a0a4f, #073f31);
+    color: #fff;
+    transform: translateY(-2px) scale(1.02);
+    border-color: #a855f7;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
   }
 
-  /* On desktop, buttons take full width of their container */
   @media (min-width: 800px) {
+    flex-grow: 0;
     width: 100%;
-    flex-grow: 0; /* Reset flex-grow */
   }
 `;
 
 export function WelcomeBanner() {
   const wallet = useWallet();
   const walletModal = useWalletModal();
-  const { set: setUserModal } = useUserStore(); // Destructure for cleaner access
+  const { set: setUserModal } = useUserStore();
 
   const handleCopyInvite = () => {
     setUserModal({ userModal: true });
-    if (!wallet.connected) {
-      walletModal.setVisible(true);
-    }
+    if (!wallet.connected) walletModal.setVisible(true);
   };
 
-  const openLink = (url) => () => window.open(url, '_blank', 'noopener,noreferrer');
+  const openLink = (url) => () =>
+    window.open(url, "_blank", "noopener,noreferrer");
 
   return (
     <WelcomeWrapper>
       <WelcomeContent>
-        <h1>Welcome to Solplay 👋</h1>
-        <p>A fair, simple and decentralized casino on Solana.</p>
+        <h1>Welcome to Solplay</h1>
+        <p>
+          A fair, simple, and decentralized casino built on Solana. Play with
+          full transparency, low fees, and complete control of your funds.
+        </p>
       </WelcomeContent>
       <ButtonGroup>
         <ActionButton onClick={handleCopyInvite}>
-          💸 Copy Invite
+          <FaCopy /> Copy Invite
         </ActionButton>
-        <ActionButton onClick={openLink('https://v2.gamba.so/')}>
-         🎟️ Support
+        <ActionButton onClick={openLink("https://v2.gamba.so/")}>
+          <FaTicketAlt /> Support
         </ActionButton>
-        <ActionButton onClick={openLink('https://discord.gg/HSTtFFwR')}>
-          💬 Discord
+        <ActionButton onClick={openLink("https://discord.gg/HSTtFFwR")}>
+          <FaDiscord /> Discord
         </ActionButton>
       </ButtonGroup>
     </WelcomeWrapper>

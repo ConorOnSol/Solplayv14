@@ -45,12 +45,12 @@ export const POOLS = [
   lp(FAKE_TOKEN_MINT),
   // SOL:
   lp('So11111111111111111111111111111111111111112'),
-  // USDC:
-  lp('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
+  // // USDC:
+  // lp('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
   // Wormhole:
-  lp('85VBFQZC9TZkfaptBWjvUw7YbZjy52A6mjtPGjstQAmQ'),
-  //private pool example (mint + authority)
-  lp('So11111111111111111111111111111111111111112', 'Fki4Yah4ZXvFmDUw8WspxRAEmfERPth7PPEwPYt3bior'),
+  // lp('85VBFQZC9TZkfaptBWjvUw7YbZjy52A6mjtPGjstQAmQ'),
+  //private pool example (mint + authority) this is used for your own token
+  // lp('So11111111111111111111111111111111111111112', 'Fki4Yah4ZXvFmDUw8WspxRAEmfERPth7PPEwPYt3bior'),
 ]
 
 // The default token to be selected
@@ -70,15 +70,15 @@ export const TOKEN_METADATA: (Partial<TokenMeta> & {mint: PublicKey})[] = [
     decimals: 9,
     usdPrice: 0,
   },
-  {
-    mint: new PublicKey('85VBFQZC9TZkfaptBWjvUw7YbZjy52A6mjtPGjstQAmQ'),
-    name: 'W',
-    symbol: 'Wormhole',
-    image: 'https://wormhole.com/token.png',
-    baseWager: 1e6,
-    decimals: 6,
-    usdPrice: 0,
-  },
+  // {
+  //   mint: new PublicKey('85VBFQZC9TZkfaptBWjvUw7YbZjy52A6mjtPGjstQAmQ'),
+  //   name: 'W',
+  //   symbol: 'Wormhole',
+  //   image: 'https://wormhole.com/token.png',
+  //   baseWager: 1e6,
+  //   decimals: 6,
+  //   usdPrice: 0,
+  // },
 ]
 
 /** HTML to display to user that they need to accept in order to continue */

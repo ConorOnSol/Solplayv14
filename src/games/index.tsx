@@ -23,18 +23,6 @@ export const GAMES: ExtendedGameBundle[] = [
     app: React.lazy(() => import('./Dice')),
   },
   {
-    id: 'slots',
-    meta: {
-      background: '#5465ff',
-      name: 'Slots',
-      image: '/games/slots.png',
-      description: `
-        Slots is the quintessential game of luck and anticipation. Spin the reels and match symbols to win, with potential rewards displayed upfront. A fair and exciting game, Slots offers a classic casino experience tailored for digital enjoyment.
-      `,
-    },
-    app: React.lazy(() => import('./Slots')),
-  },
-  {
     id: 'flip',
     meta: {
       background: '#ffe694',
@@ -131,18 +119,5 @@ export const GAMES: ExtendedGameBundle[] = [
       tag: 'Multiplayer',  
     },
     app: React.lazy(() => import('./Jackpot')),
-  },
-  {
-    id: 'plinkorace',
-    meta: {
-      background: '#62cc34ff',
-      name: 'PlinkoRace',
-      image: '/games/plinkorace.png',
-      description: `
-        multiplayer plinko game 
-      `,
-      tag: 'Multiplayer', 
-    },
-    app: React.lazy(() => import('./PlinkoRace')),
   },
 ];

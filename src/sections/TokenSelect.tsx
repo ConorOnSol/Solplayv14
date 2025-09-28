@@ -39,14 +39,23 @@ const StyledTokenButton = styled.button`
   }
 `
 
-function TokenImage({ mint, ...props }: {mint: PublicKey}) {
+const Arrow = styled.span<{ open: boolean }>`
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #fff;
+  transition: transform 0.2s;
+  transform: ${({ open }) => (open ? 'rotate(180deg)' : 'rotate(0deg)')};
+`
+
+function TokenImage({ mint, ...props }: { mint: PublicKey }) {
   const meta = useTokenMeta(mint)
-  return (
-    <StyledTokenImage src={meta.image} {...props} />
-  )
+  return <StyledTokenImage src={meta.image} {...props} />
 }
 
-function TokenSelectItem({ mint }: {mint: PublicKey}) {
+function TokenSelectItem({ mint }: { mint: PublicKey }) {
   const balance = useTokenBalance(mint)
   return (
     <>
@@ -58,21 +67,18 @@ function TokenSelectItem({ mint }: {mint: PublicKey}) {
 export default function TokenSelect() {
   const [visible, setVisible] = React.useState(false)
   const [warning, setWarning] = React.useState(false)
-  // Allow real plays override via query param/localStorage for deployed testing
   const [allowRealPlays, setAllowRealPlays] = React.useState(false)
   const context = React.useContext(GambaPlatformContext)
   const selectedToken = useCurrentToken()
   const userStore = useUserStore()
   const balance = useTokenBalance()
 
-  // Update the platform context with the last selected token from localStorage
   useEffect(() => {
     if (userStore.lastSelectedPool) {
       context.setPool(userStore.lastSelectedPool.token, userStore.lastSelectedPool.authority)
     }
   }, [])
 
-  // Read real-play override – enables SOL selection on deployed builds when needed
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search)
@@ -88,13 +94,11 @@ export default function TokenSelect() {
 
   const selectPool = (pool: PoolToken) => {
     setVisible(false)
-    // Check if platform has real plays disabled
     const realDisabled = Boolean(import.meta.env.VITE_REAL_PLAYS_DISABLED) && !allowRealPlays
     if (realDisabled && !pool.token.equals(FAKE_TOKEN_MINT)) {
       setWarning(true)
       return
     }
-    // Update selected pool
     context.setPool(pool.token, pool.authority)
     userStore.set({
       lastSelectedPool: {
@@ -104,37 +108,32 @@ export default function TokenSelect() {
     })
   }
 
-  const click = () => {
-    setVisible(!visible)
-  }
+  const click = () => setVisible(!visible)
 
   return (
     <>
       {warning && (
         <Modal>
           <h1>Real plays disabled</h1>
-          <p>
-            This platform only allows you to play with fake tokens.
-          </p>
-          <GambaUi.Button
-            main
-            onClick={() => setWarning(false)}
-          >
-            Okay
-          </GambaUi.Button>
+          <p>This platform only allows you to play with fake tokens.</p>
+          <GambaUi.Button main onClick={() => setWarning(false)}>Okay</GambaUi.Button>
         </Modal>
       )}
+
       <div style={{ position: 'relative' }}>
         <GambaUi.Button onClick={click}>
-          {selectedToken && (
-            <StyledToken>
-              <TokenImage mint={selectedToken.mint} />
-              <TokenValue amount={balance.balance} />
-            </StyledToken>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            {selectedToken && (
+              <StyledToken>
+                <TokenImage mint={selectedToken.mint} />
+                <TokenValue amount={balance.balance} />
+              </StyledToken>
+            )}
+            <Arrow open={visible} />
+          </div>
         </GambaUi.Button>
+
         <Dropdown visible={visible}>
-          {/* Mount balances for list items only when dropdown is visible to avoid unnecessary watchers */}
           {visible && POOLS.map((pool, i) => (
             <StyledTokenButton onClick={() => selectPool(pool)} key={i}>
               <TokenSelectItem mint={pool.token} />
