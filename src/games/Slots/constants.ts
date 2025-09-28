@@ -22,12 +22,12 @@ const slotItem = (multiplier: number, ...icons: string[]): SlotItem[] =>
   icons.map((image) => ({ multiplier, image }))
 
 export const SLOT_ITEMS = [
-  slotItem(15, IMAGE_UNICORN),
-  slotItem(10, IMAGE_5X),
-  slotItem(8, IMAGE_3X),
-  slotItem(6, IMAGE_2X),
-  slotItem(3.5, IMAGE_COOL, IMAGE_HEARTS),
-  slotItem(2, IMAGE_WOJAK),
+  slotItem(7, IMAGE_UNICORN),
+  slotItem(5, IMAGE_5X),
+  slotItem(3, IMAGE_3X),
+  slotItem(2, IMAGE_2X),
+  slotItem(1, IMAGE_COOL, IMAGE_HEARTS),
+  slotItem(0.5, IMAGE_WOJAK),
 ].flat()
 
 export const NUM_SLOTS = 3
