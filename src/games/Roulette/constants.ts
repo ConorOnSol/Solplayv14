@@ -6,7 +6,7 @@ export const SOUND_WIN = 'https://raw.githubusercontent.com/gamba-labs/gamba/mai
 export const SOUND_LOSE = 'https://raw.githubusercontent.com/gamba-labs/gamba/main/apps/play/public/lose.wav'
 export const SOUND_PLAY = 'https://raw.githubusercontent.com/gamba-labs/gamba/main/apps/play/public/play.wav'
 
-export const tableLayout: Record<string, { label: string; numbers: number[]; row: number; column: number; color: 'red' | 'black' | 'green' }> = {
+export const tableLayout: Record<string, { label: string; numbers: number[]; row: number; column: string; color: 'red' | 'black' | 'green' }> = {
   '0': { label: '0', numbers: [0], row: 1, column: '1', color: 'green' },
   
   '1': { label: '1', numbers: [1], row: 2, column: '1', color: 'red' },
