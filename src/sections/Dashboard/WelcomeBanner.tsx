@@ -115,7 +115,7 @@ export function WelcomeBanner() {
   return (
     <WelcomeWrapper>
       <WelcomeContent>
-        <h1>Welcome to Solplay</h1>
+        <h1>Welcome to SolplayA</h1>
         <p>
           A fair, simple, and decentralized casino built on Solana. Play with
           full transparency, low fees, and complete control of your funds.
