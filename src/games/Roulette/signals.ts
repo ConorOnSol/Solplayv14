@@ -14,7 +14,7 @@ export const distributedChips = computed(
       const square = tableLayout[id]
       const divided = Number(BigInt(amount * 10_000) / BigInt(square.numbers.length))
       for (const number of square.numbers) {
-        distributed[number - 1] += divided
+        distributed[number] += divided
       }
     }
     return distributed
@@ -37,7 +37,7 @@ export const bet = computed(
 )
 
 export const addResult = (index: number) => {
-  results.value = [...results.value, index]
+  results.value = [...results.value.slice(-19), index]
 }
 
 export const getChips = (id: string) => {
