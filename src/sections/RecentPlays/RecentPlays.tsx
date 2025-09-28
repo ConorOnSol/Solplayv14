@@ -71,12 +71,16 @@ export default function RecentPlays() {
             <RecentPlay event={tx} />
           </div>
           <TimeDiff time={tx.time} suffix={md ? 'ago' : ''} />
-        </Recent>
+     </Recent>
       ))}
       <GambaUi.Button
         main
         onClick={() =>
           window.open(`${EXPLORER_URL}/platform/${PLATFORM_CREATOR_ADDRESS.toString()}`)
         }
-     
+      >
+        🚀 Explorer
+      </GambaUi.Button>
+    </Container>
+  )
 }
