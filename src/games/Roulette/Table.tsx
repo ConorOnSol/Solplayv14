@@ -38,7 +38,10 @@ export function Table() {
                   remove(id)
                 }
               }}
-              onContextMenu={() => remove(id)}
+              onContextMenu={(e) => {
+                e.preventDefault()
+                remove(id)
+              }}
               style={{
                 gridRow: square.row,
                 gridColumn: square.column,
