@@ -118,7 +118,7 @@ export function WelcomeBanner() {
   return (
     <WelcomeWrapper>
       <WelcomeContent>
-        <h1>Welcome to Solplay 👋</h1>
+        <h1>Welcome to Solplay</h1>
         <p>A fair, simple and decentralized casino on Solana.</p>
       </WelcomeContent>
       <ButtonGroup>
