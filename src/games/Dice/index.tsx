@@ -39,7 +39,7 @@ export default function Dice() {
   const [wager, setWager] = useWagerInput()
   const pool = useCurrentPool()
   const [resultIndex, setResultIndex] = React.useState(-1)
-  const [rollUnderIndex, setRollUnderIndex] = React.useState(Math.floor(100 / 2))
+  const [rollUnderIndex, setRollUnderIndex] = React.useState(95) // Changed to 95 for 95% win chance
   const sounds = useSound({
     win: SOUND_WIN,
     play: SOUND_PLAY,
@@ -47,10 +47,22 @@ export default function Dice() {
     tick: SOUND_TICK,
   })
 
-  const odds = Math.floor((rollUnderIndex / 100) * 100)
-  const multiplier = Number(BigInt(100 * BPS_PER_WHOLE) / BigInt(rollUnderIndex)) / BPS_PER_WHOLE
+  // Fixed values for 95% win chance and 10x multiplier
+  const fixedWinChance = 95
+  const fixedMultiplier = 10
+  const fixedRollUnder = 95 // 95% win chance
 
-  const bet = React.useMemo(() => outcomes(odds), [rollUnderIndex])
+  const odds = fixedRollUnder
+  const multiplier = fixedMultiplier
+
+  // Create bet array with 95% win chance and 10x payout
+  const bet = React.useMemo(() => {
+    const arraySize = 100
+    let payoutArray = Array.from({ length: arraySize }).map((_, index) =>
+      index < fixedRollUnder ? fixedMultiplier : 0
+    )
+    return payoutArray
+  }, [])
 
   const maxWin = multiplier * wager
 
@@ -69,8 +81,8 @@ export default function Dice() {
     const win = result.payout > 0
 
     const resultNum = win
-      ? Math.floor(Math.random() * rollUnderIndex)
-      : Math.floor(Math.random() * (100 - rollUnderIndex) + rollUnderIndex)
+      ? Math.floor(Math.random() * fixedRollUnder)
+      : Math.floor(Math.random() * (100 - fixedRollUnder) + fixedRollUnder)
 
     setResultIndex(resultNum)
 
@@ -84,17 +96,17 @@ export default function Dice() {
           <Container>
             <RollUnder>
               <div>
-                <div>{rollUnderIndex + 1}</div>
+                <div>{fixedRollUnder}</div>
                 <div>Roll Under</div>
               </div>
             </RollUnder>
             <Stats>
               <div>
-                <div>{(rollUnderIndex / 100 * 100).toFixed(0)}%</div>
+                <div>{fixedWinChance}%</div>
                 <div>Win Chance</div>
               </div>
               <div>
-                <div>{multiplier.toFixed(2)}x</div>
+                <div>{fixedMultiplier.toFixed(2)}x</div>
                 <div>Multiplier</div>
               </div>
               <div>
@@ -108,21 +120,24 @@ export default function Dice() {
             </Stats>
             <div style={{ position: 'relative' }}>
               {resultIndex > -1 && (
-                <Result style={{ left: `${resultIndex / 100 * 100}%` }}>
+                <Result style={{ left: `${resultIndex}%` }}>
                   <div key={resultIndex}>{resultIndex + 1}</div>
                 </Result>
               )}
-              <Slider
-                disabled={gamba.isPlaying}
-                range={[0, 100]}
-                min={1}
-                max={100 - 5}
-                value={rollUnderIndex}
-                onChange={(value) => {
-                  setRollUnderIndex(value)
-                  sounds.play('tick')
-                }}
-              />
+              {/* Hidden slider since values are fixed */}
+              <div style={{ opacity: 0.5, pointerEvents: 'none' }}>
+                <Slider
+                  disabled={true}
+                  range={[0, 100]}
+                  min={1}
+                  max={100 - 5}
+                  value={fixedRollUnder}
+                  onChange={() => {}}
+                />
+              </div>
+              <div style={{ textAlign: 'center', marginTop: '10px', color: '#666' }}>
+                Fixed: 95% Win Chance • 10x Multiplier
+              </div>
             </div>
           </Container>
         </GambaUi.Responsive>
