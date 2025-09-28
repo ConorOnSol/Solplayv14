@@ -78,9 +78,5 @@ export default function RecentPlays() {
         onClick={() =>
           window.open(`${EXPLORER_URL}/platform/${PLATFORM_CREATOR_ADDRESS.toString()}`)
         }
-      >
-        🚀 Explorer
-      </GambaUi.Button>
-    </Container>
-  )
+     
 }
