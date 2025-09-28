@@ -12,9 +12,13 @@ export const distributedChips = computed(
     const distributed = Array.from({ length: NUMBERS }).map(() => 0)
     for (const [id, amount] of placements) {
       const square = tableLayout[id]
-      const divided = Number(BigInt(amount * 10_000) / BigInt(square.numbers.length))
-      for (const number of square.numbers) {
-        distributed[number] += divided
+      if (square) {
+        const divided = Number(BigInt(amount * 10_000) / BigInt(square.numbers.length))
+        for (const number of square.numbers) {
+          if (number >= 0 && number < distributed.length) {
+            distributed[number] += divided
+          }
+        }
       }
     }
     return distributed
@@ -29,8 +33,13 @@ export const totalChipValue = computed(
 
 export const bet = computed(
   () => {
+    const total = totalChipValue.value
+    if (total === 0) {
+      return Array.from({ length: NUMBERS }).map(() => 0)
+    }
+    
     const bet = distributedChips.value.map((amount) => {
-      return Number(BigInt(amount * distributedChips.value.length * 10_000) / BigInt(totalChipValue.value || 1)) / 10_000
+      return Number(BigInt(amount * NUMBERS * 10_000) / BigInt(total)) / 10_000
     })
     return bet
   },
@@ -56,10 +65,9 @@ export const addChips = (id: string, amount: number) => {
 }
 
 export const removeChips = (id: string) => {
-  chipPlacements.value = {
-    ...chipPlacements.value,
-    [id]: 0,
-  }
+  const newPlacements = { ...chipPlacements.value }
+  delete newPlacements[id]
+  chipPlacements.value = newPlacements
 }
 
 export const clearChips = () => {
