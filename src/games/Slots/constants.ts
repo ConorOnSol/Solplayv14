@@ -27,7 +27,7 @@ export const SLOT_ITEMS = [
   slotItem(3, IMAGE_3X),
   slotItem(2, IMAGE_2X),
   slotItem(1, IMAGE_COOL, IMAGE_HEARTS),
-  slotItem(0.5, IMAGE_WOJAK),
+  slotItem(.5, IMAGE_WOJAK),
 ].flat()
 
 export const NUM_SLOTS = 3

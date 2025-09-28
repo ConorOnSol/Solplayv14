@@ -1,4 +1,3 @@
-
 // src/components/LeaderboardsModal.styles.ts
 import styled, { css } from 'styled-components'
 
