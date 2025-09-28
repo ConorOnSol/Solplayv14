@@ -2,7 +2,7 @@ import { computed } from '@preact/signals-react'
 import { GambaUi, TokenValue, useCurrentPool, useCurrentToken, useSound, useUserBalance } from 'gamba-react-ui-v2'
 import { useGamba } from 'gamba-react-v2'
 import React, { useState } from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { Chip } from './Chip'
 import { RouletteWheel } from './Roulette/Wheel'
 import { StyledResults } from './Roulette.styles'
@@ -48,13 +48,19 @@ const TableSection = styled.div`
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 `
 
+const pulse = keyframes`
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+`
+
 function Results() {
   const _results = computed(() => [...results.value].reverse().slice(0, 10))
   return (
     <StyledResults>
       <div>LATEST</div>
-      {_results.value.map((index, i) => {
-        const number = index + 1
+      {_results.value.map((resultIndex, i) => {
+        const number = resultIndex
         const isRed = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36].includes(number)
         const isGreen = number === 0
         const color = isGreen ? '#00a855' : isRed ? '#ff3d5e' : '#2a2a3a'
@@ -81,7 +87,7 @@ function Stats() {
   const pool = useCurrentPool()
   const token = useCurrentToken()
   const balance = useUserBalance()
-  const wager = totalChipValue.value * token.baseWager / 10_000
+  const wager = totalChipValue.value * token.baseWager
 
   const multiplier = Math.max(...bet.value)
   const maxPayout = multiplier * wager
@@ -148,7 +154,7 @@ export default function Roulette() {
     play: SOUND_PLAY,
   })
 
-  const wager = totalChipValue.value * token.baseWager / 10_000
+  const wager = totalChipValue.value * token.baseWager
 
   const multiplier = Math.max(...bet.value)
   const maxPayout = multiplier * wager
