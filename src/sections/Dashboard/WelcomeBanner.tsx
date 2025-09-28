@@ -128,7 +128,7 @@ export function WelcomeBanner() {
         <ActionButton onClick={openLink('https://v2.gamba.so/')}>
          🎟️ Support
         </ActionButton>
-        <ActionButton onClick={openLink('https://discord.gg/HSTtFFwR')}>
+        <ActionButton onClick={openLink('https://discord.gg/b4cAtuY6tZ')}>
           💬 Discord
         </ActionButton>
       </ButtonGroup>
