@@ -11,6 +11,12 @@ const slowSpin = keyframes`
   100% { transform: rotate(360deg); }
 `
 
+const pulse = keyframes`
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+`
+
 const WheelContainer = styled.div<{ $spinning: boolean; $result: number | null }>`
   width: 300px;
   height: 300px;
@@ -135,7 +141,7 @@ export function RouletteWheel({ spinning, result }: WheelProps) {
           {rouletteNumbers.map((item, index) => (
             <WheelNumber
               key={item.number}
-              $color={item.color as 'red' | 'black' | 'green'}
+              $color={item.color}
               $angle={(index / rouletteNumbers.length) * 360}
             >
               {item.number}
@@ -160,7 +166,7 @@ export function RouletteWheel({ spinning, result }: WheelProps) {
           fontWeight: 'bold',
           zIndex: 4,
           border: '3px solid gold',
-          animation: 'pulse 2s infinite'
+          animation: `${pulse} 2s infinite`
         }}>
           {displayResult}
         </div>
