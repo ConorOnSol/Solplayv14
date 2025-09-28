@@ -191,7 +191,7 @@ export default function Blackjack(props: BlackjackConfig) {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
            <h2>Dealer's Hand</h2>
 <div style={{ fontSize: '14px', color: '#ccc', marginBottom: '5px' }}>
-  {dealerCards.length} card{dealerCards.length !== 1 ? 's' : ''}
+  {dealerCards.length} card{dealerCards.length !== 1 ? 's' : ''} • Total: {getHandValue(dealerCards)}
 </div>
 <CardArea>
   <CardsContainer>
@@ -208,7 +208,7 @@ export default function Blackjack(props: BlackjackConfig) {
 
 <h2>Player's Hand</h2>
 <div style={{ fontSize: '14px', color: '#ccc', marginBottom: '5px' }}>
-  {playerCards.length} card{playerCards.length !== 1 ? 's' : ''}
+  {playerCards.length} card{playerCards.length !== 1 ? 's' : ''} • Total: {getHandValue(playerCards)}
 </div>
 <CardArea>
   <CardsContainer>
@@ -222,19 +222,6 @@ export default function Blackjack(props: BlackjackConfig) {
     ))}
   </CardsContainer>
 </CardArea>
-              {profit !== null && (
-                <Profit key={profit}>
-                  {profit > 0 ? (
-                    <>
-                      <TokenValue amount={profit} /> +{Math.round((profit / initialWager) * 100 - 100)}%
-                    </>
-                  ) : (
-                    <>You Lost</>
-                  )}
-                </Profit>
-              )}
-            </div>
-          </Container>
         </GambaUi.Responsive>
       </GambaUi.Portal>
       <GambaUi.Portal target="controls">
