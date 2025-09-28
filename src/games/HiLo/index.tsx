@@ -1,235 +1,228 @@
-import styled, { css, keyframes } from 'styled-components'
+import { GambaUi, TokenValue, useCurrentPool, useSound, useWagerInput } from 'gamba-react-ui-v2'
+import { useGamba } from 'gamba-react-v2'
+import React from 'react'
+import { MAX_CARD_SHOWN, RANKS, RANK_SYMBOLS, SOUND_CARD, SOUND_FINISH, SOUND_LOSE, SOUND_PLAY, SOUND_WIN } from './constants'
+import { Card, CardContainer, CardPreview, CardsContainer, Container, Option, Options, Profit } from './styles'
 
-const appear = keyframes`
-  0% { transform: scale(.0) translateY(100px) rotateY(90deg); }
-  100% { transform: scale(1) translateY(0) rotateY(0deg) }
-`
+const BPS_PER_WHOLE = 10000
 
-export const Container = styled.div<{ $disabled?: boolean }>`
-  user-select: none;
-  background: #9967e300;
-  transition: opacity .2s;
-  ${({ $disabled }) => $disabled && css`
-    pointer-events: none;
-    opacity: .7;
-  `}
-`
+const randomRank = () => 1 + Math.floor(Math.random() * (RANKS - 1))
 
-export const Options = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: center;
-  justify-content: center;
-`
+const card = (rank = randomRank()): Card => ({
+  key: Math.random(),
+  rank,
+})
 
-export const Blue3dButton = styled.button<{ selected?: boolean }>`
-  background: linear-gradient(145deg, #1e88e5, #1565c0);
-  border: none;
-  margin: 0;
-  padding: 20px 30px;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 15px;
-  cursor: pointer;
-  font-size: 20px;
-  color: white;
-  font-weight: bold;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-  box-shadow: 
-    inset 0 -8px 0 0 rgba(0, 0, 0, 0.2),
-    inset 0 0 20px rgba(33, 150, 243, 0.3),
-    0 6px 12px rgba(0, 0, 0, 0.15);
-  border: 2px solid #64b5f6;
-  position: relative;
-  overflow: hidden;
-  min-width: 200px;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50%;
-    background: linear-gradient(rgba(255,255,255,0.2), transparent);
-    border-radius: 15px 15px 0 0;
+interface Card {
+  key: number
+  rank: number
+}
+
+export interface HiLoConfig {
+  logo: string
+}
+
+const generateBetArray = (currentRank: number, isHi: boolean) => {
+  return Array.from({ length: RANKS }).map((_, i) => {
+    const result = (() => {
+      if (isHi) {
+        return currentRank === 0
+          ? i > currentRank ? BigInt(RANKS * BPS_PER_WHOLE) / BigInt((RANKS - 1) - currentRank) : BigInt(0)
+          : i >= currentRank ? BigInt(RANKS * BPS_PER_WHOLE) / BigInt((RANKS - currentRank)) : BigInt(0)
+      }
+      return currentRank === RANKS - 1
+        ? i < currentRank ? BigInt(RANKS * BPS_PER_WHOLE) / BigInt(currentRank) : BigInt(0)
+        : i <= currentRank ? BigInt(RANKS * BPS_PER_WHOLE) / BigInt((currentRank + 1)) : BigInt(0)
+    })()
+    return Number(result) / BPS_PER_WHOLE
+  })
+}
+
+const adjustBetArray = (betArray: number[]) => {
+  const maxLength = betArray.length
+  const sum = betArray.reduce((acc, val) => acc + val, 0)
+  if (sum > maxLength) {
+    const maxIndex = betArray.findIndex(val => val === Math.max(...betArray))
+    betArray[maxIndex] -= sum - maxLength
+    if (betArray[maxIndex] < 0) betArray[maxIndex] = 0
   }
+  return betArray
+}
 
-  & > div:first-child {
-    font-size: 48px;
-    filter: drop-shadow(-2px 2px 2px #00000066);
-    margin-right: 15px;
-  }
+export default function HiLo(props: HiLoConfig) {
+  const game = GambaUi.useGame()
+  const gamba = useGamba()
+  const pool = useCurrentPool()
+  const [cards, setCards] = React.useState([card()])
+  const [claiming, setClaiming] = React.useState(false)
+  const [initialWager, setInitialWager] = useWagerInput()
+  const [profit, setProfit] = React.useState(0)
+  const currentRank = cards[cards.length - 1].rank
+  const [option, setOption] = React.useState<'hi' | 'lo'>(currentRank > RANKS / 2 ? 'lo' : 'hi')
+  const [hoveredOption, hoverOption] = React.useState<'hi' | 'lo'>()
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 
-      inset 0 -6px 0 0 rgba(0, 0, 0, 0.2),
-      inset 0 0 25px rgba(33, 150, 243, 0.4),
-      0 8px 16px rgba(0, 0, 0, 0.2);
-  }
+  const addCard = (rank: number) => setCards((cards) => [...cards, card(rank)].slice(-MAX_CARD_SHOWN))
 
-  &:active {
-    transform: translateY(2px);
-    box-shadow: 
-      inset 0 -2px 0 0 rgba(0, 0, 0, 0.2),
-      inset 0 0 15px rgba(33, 150, 243, 0.3),
-      0 2px 8px rgba(0, 0, 0, 0.15);
-  }
+  const sounds = useSound({
+    card: SOUND_CARD,
+    win: SOUND_WIN,
+    lose: SOUND_LOSE,
+    play: SOUND_PLAY,
+    finish: SOUND_FINISH,
+  })
 
-  ${(props) => props.selected && css`
-    background: linear-gradient(145deg, #1565c0, #0d47a1);
-    box-shadow: 
-      inset 0 2px 0 0 rgba(255, 255, 255, 0.2),
-      inset 0 0 25px rgba(13, 71, 161, 0.5),
-      0 4px 8px rgba(0, 0, 0, 0.2);
-    transform: translateY(4px);
-    
-    &::before {
-      background: linear-gradient(rgba(255,255,255,0.1), transparent);
+  const betHi = React.useMemo(() => generateBetArray(currentRank, true), [currentRank])
+  const betLo = React.useMemo(() => generateBetArray(currentRank, false), [currentRank])
+
+  const _bet = React.useMemo(() => {
+    const _option = hoveredOption ?? option
+    if (_option === 'hi') return betHi
+    if (_option === 'lo') return betLo
+    return [0]
+  }, [betHi, betLo, hoveredOption, option])
+
+  const resetGame = async () => {
+    try {
+      if (claiming) return
+      sounds.play('finish', { playbackRate: .8 })
+      setTimeout(() => {
+        setProfit(0)
+        sounds.play('card')
+        addCard(randomRank())
+        setClaiming(false)
+      }, 300)
+    } catch {
+      setClaiming(false)
     }
-  `}
-
-  ${(props) => !props.selected && css`
-    &:hover {
-      background: linear-gradient(145deg, #2196f3, #1976d2);
-    }
-  `}
-`
-
-// Keep the existing Option component for reference, but we're using Blue3dButton instead
-export const Option = styled.button<{ selected?: boolean }>`
-  background: none;
-  border: none;
-  margin: 0;
-  padding: 0;
-  transition: opacity .2s, background .2s ease;
-  display: flex;
-  align-items: center;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 20px;
-  color: white;
-  & > div:first-child {
-    font-size: 48px;
-    filter: drop-shadow(-4px 4px 2px #00000066);
-    margin-right: 10px;
   }
 
-  --opacity: .5;
+  const bet = adjustBetArray(_bet)
 
-  &:hover {
-    --opacity : 1;
+  const multipler = Math.max(...bet)
+  const maxWagerForBet = pool.maxPayout / multipler
+  const wager = Math.min(maxWagerForBet, profit || initialWager)
+
+  const play = async () => {
+    sounds.play('play')
+
+    await game.play({
+      bet,
+      wager,
+    })
+
+    const result = await game.result()
+    addCard(result.resultIndex)
+    sounds.play('card', { playbackRate: .8 })
+    const win = result.payout > 0
+
+    setTimeout(() => {
+      setProfit(result.payout)
+      if (win) {
+        sounds.play('win')
+      } else {
+        sounds.play('lose')
+      }
+    }, 300)
   }
 
-  ${(props) => props.selected && css`
-    --opacity: 1;
-  `}
-
-  opacity: var(--opacity);
-`
-
-export const Profit = styled.div`
-  font-size: 18px;
-  color: #005400;
-  position: absolute;
-  right: 0px;
-  bottom: -100px;
-  border-radius: 50px;
-  background: #69ff6d;
-  padding: 5px;
-  animation: ${appear} .25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-`
-
-export const CardPreview = styled.div`
-  display: flex;
-  border-radius: 5px;
-  gap: 5px;
-  padding: 5px;
-  margin-top: 30px;
-  justify-content: center;
-  & > div {
-    transition: opacity .2s;
-  }
-`
-
-export const CardsContainer = styled.div`
-  transition: transform .2s ease;
-  perspective: 500px;
-  display: flex;
-  position: relative;
-  justify-content: flex-end;
-  align-items: center;
-`
-
-export const CardContainer = styled.div`
-  position: absolute;
-  bottom: 0;
-  transition: transform .25s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity .25s ease;
-  filter: drop-shadow(-10px 10px 0px #00000011);
-  transform-origin: bottom;
-  perspective: 500px;
-  & > div {
-    animation: ${appear} .25s cubic-bezier(0.5, 0.9, 0.35, 1.05);
-  }
-`
-
-export const Card = styled.div<{$small?: boolean}>`
-  ${(props) => props.$small ? css`
-    height: 35px;
-    font-size: 15px;
-    padding: 5px;
-    border-radius: 4px;
-  ` : css`
-    height: 160px;
-    font-size: 70px;
-    padding: 10px;
-    border-radius: 8px;
-  `}
-  box-shadow: -5px 5px 10px 1px #0000003d;
-  background: white;
-  aspect-ratio: 4/5.5;
-  position: relative;
-  color: #333;
-  overflow: hidden;
-  .rank {
-    font-weight: bold;
-    line-height: 1em;
-  }
-  .suit {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 50%;
-    height: 50%;
-    background-size: cover;
-    background-repeat: none;
-    transform: translate(0%, 0%);
-    font-size: 128px;
-    opacity: .9;
-  }
-`
-
-const float = keyframes`
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-`
-
-export const WarningMessage = styled.div`
-  animation: ${float} 2s ease-in-out infinite;
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateX(100%) translateY(-50%);
-  background-color: rgba(255, 204, 0, 0.8);
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  font-size: 14px;
-  color: black;
-  white-space: nowrap;
-  pointer-events: none;
-`
+  return (
+    <>
+      <GambaUi.Portal target="screen">
+        <GambaUi.Responsive>
+          <Container $disabled={claiming || gamba.isPlaying}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+              <CardsContainer>
+                {cards.map((card, i) => {
+                  const offset = -(cards.length - (i + 1))
+                  const xxx = cards.length > 3 ? (i / cards.length) : 1
+                  const opacity = Math.min(1, xxx * 3)
+                  return (
+                    <CardContainer
+                      key={card.key}
+                      style={{
+                        transform: `translate(${offset * 30}px, ${-offset * 0}px) rotateZ(-5deg) rotateY(5deg)`,
+                        opacity,
+                      }}
+                    >
+                      <Card>
+                        <div className="rank">{RANK_SYMBOLS[card.rank]}</div>
+                        <div className="suit" style={{ backgroundImage: 'url(' + props.logo +  ')' }} />
+                      </Card>
+                    </CardContainer>
+                  )
+                })}
+              </CardsContainer>
+              <Options>
+                <Option
+                  selected={option === 'hi'}
+                  onClick={() => setOption('hi')}
+                  onMouseEnter={() => hoverOption('hi')}
+                  onMouseLeave={() => hoverOption(undefined)}
+                >
+                  <div>
+                    👆
+                  </div>
+                  <div>HI - ({Math.max(...betHi).toFixed(2)}x)</div>
+                </Option>
+                <Option
+                  selected={option === 'lo'}
+                  onClick={() => setOption('lo')}
+                  onMouseEnter={() => hoverOption('lo')}
+                  onMouseLeave={() => hoverOption(undefined)}
+                >
+                  <div>
+                    👇
+                  </div>
+                  <div>LO - ({Math.max(...betLo).toFixed(2)}x)</div>
+                </Option>
+              </Options>
+            </div>
+            <CardPreview>
+              {Array.from({ length: RANKS }).map((_, rankIndex) => {
+                const opacity = bet[rankIndex] > 0 ? .9 : .5
+                return (
+                  <Card key={rankIndex} $small style={{ opacity }} onClick={() => addCard(rankIndex)}>
+                    <div className="rank">{RANK_SYMBOLS[rankIndex]}</div>
+                  </Card>
+                )
+              })}
+            </CardPreview>
+            {profit > 0 && (
+              <Profit key={profit} onClick={resetGame}>
+                <TokenValue amount={profit} /> +{Math.round(profit / initialWager * 100 - 100).toLocaleString()}%
+              </Profit>
+            )}
+          </Container>
+        </GambaUi.Responsive>
+      </GambaUi.Portal>
+      <GambaUi.Portal target="controls">
+        {!profit ? (
+          <>
+            <GambaUi.WagerInput
+              value={initialWager}
+              onChange={setInitialWager}
+            />
+            <GambaUi.PlayButton disabled={!option || initialWager > maxWagerForBet} onClick={play}>
+              Deal card
+            </GambaUi.PlayButton>
+            {initialWager > maxWagerForBet && (
+              <GambaUi.Button onClick={() => setInitialWager(maxWagerForBet)}>
+                Set max
+              </GambaUi.Button>
+            )}
+          </>
+        ) : (
+          <>
+            <TokenValue amount={wager} />
+            <GambaUi.Button disabled={gamba.isPlaying} onClick={resetGame}>
+              Finish
+            </GambaUi.Button>
+            <GambaUi.PlayButton disabled={!option} onClick={play}>
+              Deal card
+            </GambaUi.PlayButton>
+          </>
+        )}
+      </GambaUi.Portal>
+    </>
+  )
+}
