@@ -190,31 +190,38 @@ export default function Blackjack(props: BlackjackConfig) {
           <Container $disabled={claiming || gamba.isPlaying}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <h2>Dealer's Hand</h2>
-              <CardArea>
-                <CardsContainer>
-                  {dealerCards.map((card) => (
-                    <CardContainer key={card.key}>
-                      <Card color={SUIT_COLORS[card.suit]}>
-                        <div className="rank">{RANK_SYMBOLS[card.rank]}</div>
-                        <div className="suit">{SUIT_SYMBOLS[card.suit]}</div>
-                      </Card>
-                    </CardContainer>
-                  ))}
-                </CardsContainer>
-              </CardArea>
-              <h2>Player's Hand</h2>
-              <CardArea>
-                <CardsContainer>
-                  {playerCards.map((card) => (
-                    <CardContainer key={card.key}>
-                      <Card color={SUIT_COLORS[card.suit]}>
-                        <div className="rank">{RANK_SYMBOLS[card.rank]}</div>
-                        <div className="suit">{SUIT_SYMBOLS[card.suit]}</div>
-                      </Card>
-                    </CardContainer>
-                  ))}
-                </CardsContainer>
-              </CardArea>
+<div style={{ fontSize: '14px', color: '#ccc', marginBottom: '5px' }}>
+  {dealerCards.length} card{dealerCards.length !== 1 ? 's' : ''} • Total: {getHandValue(dealerCards)}
+</div>
+<CardArea>
+  <CardsContainer>
+    {dealerCards.map((card) => (
+      <CardContainer key={card.key}>
+        <Card color={SUIT_COLORS[card.suit]}>
+          <div className="rank">{RANK_SYMBOLS[card.rank]}</div>
+          <div className="suit">{SUIT_SYMBOLS[card.suit]}</div>
+        </Card>
+      </CardContainer>
+    ))}
+  </CardsContainer>
+</CardArea>
+
+<h2>Player's Hand</h2>
+<div style={{ fontSize: '14px', color: '#ccc', marginBottom: '5px' }}>
+  {playerCards.length} card{playerCards.length !== 1 ? 's' : ''} • Total: {getHandValue(playerCards)}
+</div>
+<CardArea>
+  <CardsContainer>
+    {playerCards.map((card) => (
+      <CardContainer key={card.key}>
+        <Card color={SUIT_COLORS[card.suit]}>
+          <div className="rank">{RANK_SYMBOLS[card.rank]}</div>
+          <div className="suit">{SUIT_SYMBOLS[card.suit]}</div>
+        </Card>
+      </CardContainer>
+    ))}
+  </CardsContainer>
+</CardArea>
               {profit !== null && (
                 <Profit key={profit}>
                   {profit > 0 ? (
