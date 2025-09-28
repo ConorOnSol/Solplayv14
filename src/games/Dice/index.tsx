@@ -48,7 +48,14 @@ export default function Dice() {
   })
 
   const odds = Math.floor((rollUnderIndex / 100) * 100)
-  const multiplier = Number(BigInt(100 * BPS_PER_WHOLE) / BigInt(rollUnderIndex)) / BPS_PER_WHOLE
+  
+  // Calculate multiplier - 10x when win chance is 95%
+  let multiplier
+  if (rollUnderIndex === 95) { // 95% win chance
+    multiplier = 10
+  } else {
+    multiplier = Number(BigInt(100 * BPS_PER_WHOLE) / BigInt(rollUnderIndex)) / BPS_PER_WHOLE
+  }
 
   const bet = React.useMemo(() => outcomes(odds), [rollUnderIndex])
 
