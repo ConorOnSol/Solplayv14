@@ -71,7 +71,7 @@ export default function RecentPlays() {
             <RecentPlay event={tx} />
           </div>
           <TimeDiff time={tx.time} suffix={md ? 'ago' : ''} />
-        </Recent>
+     </Recent>
       ))}
       {/* <GambaUi.Button
         main
